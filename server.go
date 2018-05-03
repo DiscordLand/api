@@ -26,5 +26,5 @@ func main() {
 		ctx.JSON(iris.Map{"file": cat})
 	})
 
-	app.Run(iris.Addr(":8080"))
+	app.Run(iris.Addr(":8008"))
 }
