@@ -19,6 +19,7 @@ func main() {
 
 	app.Use(func(ctx iris.Context) {
 		ctx.Header("Access-Control-Allow-Origin", "*")
+		ctx.Next()
 	})
 
 	app.Get("/random-cat", func(ctx iris.Context) {
