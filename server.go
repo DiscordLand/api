@@ -6,9 +6,25 @@ import (
 	"github.com/kataras/iris"
 )
 
+const port = ":8008"
+
 func handle(err error) {
 	if err != nil {
 		panic(err)
+	}
+}
+
+func cors(ctx iris.Context) {
+	ctx.Header("Access-Control-Allow-Origin", "*")
+	ctx.Next()
+}
+
+func send(ctx iris.Context, file string) {
+	if ctx.GetHeader("accept") == "text/plain" {
+		ctx.ContentType("text/plain")
+		ctx.WriteString(file)
+	} else {
+		ctx.JSON(iris.Map{"file": file})
 	}
 }
 
@@ -17,15 +33,14 @@ func main() {
 	handle(err)
 	app := iris.New()
 
-	app.Use(func(ctx iris.Context) {
-		ctx.Header("Access-Control-Allow-Origin", "*")
-		ctx.Next()
-	})
+	app.Use(cors)
 
-	app.Get("/random-cat", func(ctx iris.Context) {
+	random := app.Party("/random")
+
+	random.Get("/cat", func(ctx iris.Context) {
 		cat := cats[rand.Intn(len(cats)-1)]
-		ctx.JSON(iris.Map{"file": cat})
+		send(ctx, cat)
 	})
 
-	app.Run(iris.Addr(":8008"))
+	app.Run(iris.Addr(port))
 }
