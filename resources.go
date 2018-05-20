@@ -7,7 +7,7 @@ import (
 )
 
 func cats() ([]string, error) {
-	data, err := ioutil.ReadFile("./assets/cats.json")
+	data, err := ioutil.ReadFile("./assets/data/cats.json")
 	if err != nil {
 		return nil, err
 	}

@@ -2,8 +2,9 @@ package main
 
 import (
 	"math/rand"
+	"net/http"
 
-	"github.com/kataras/iris"
+	"github.com/gin-gonic/gin"
 )
 
 const port = ":8008"
@@ -14,33 +15,33 @@ func handle(err error) {
 	}
 }
 
-func cors(ctx iris.Context) {
+func cors(ctx *gin.Context) {
 	ctx.Header("Access-Control-Allow-Origin", "*")
 	ctx.Next()
 }
 
-func send(ctx iris.Context, file string) {
+func send(ctx *gin.Context, file string) {
 	if ctx.GetHeader("accept") == "text/plain" {
-		ctx.ContentType("text/plain")
-		ctx.WriteString(file)
+		ctx.Header("Content-Type", "text/plain; charset=UTF-8")
+		ctx.String(http.StatusOK, file)
 	} else {
-		ctx.JSON(iris.Map{"file": file})
+		ctx.JSON(http.StatusOK, gin.H{"file": file})
 	}
 }
 
 func main() {
 	cats, err := cats()
 	handle(err)
-	app := iris.New()
+	app := gin.New()
 
 	app.Use(cors)
+	app.StaticFile("/favicon.ico", "./assets/images/favicon.ico")
 
-	random := app.Party("/random")
+	random := app.Group("/random")
 
-	random.Get("/cat", func(ctx iris.Context) {
-		cat := cats[rand.Intn(len(cats)-1)]
-		send(ctx, cat)
+	random.GET("/cat", func(ctx *gin.Context) {
+		send(ctx, cats[rand.Intn(len(cats)-1)])
 	})
 
-	app.Run(iris.Addr(port))
+	handle(app.Run(port))
 }
