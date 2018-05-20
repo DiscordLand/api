@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const port = ":8008"
+const port = ":8001"
 
 func handle(err error) {
 	if err != nil {
@@ -21,7 +21,7 @@ func cors(ctx *gin.Context) {
 }
 
 func send(ctx *gin.Context, file string) {
-	if ctx.GetHeader("accept") == "text/plain" {
+	if ctx.GetHeader("Accept") == "text/plain" {
 		ctx.Header("Content-Type", "text/plain; charset=UTF-8")
 		ctx.String(http.StatusOK, file)
 	} else {
